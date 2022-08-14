@@ -22,7 +22,7 @@ Compose 中的Text可以显示html的内容
 4. text-decoration
 5. text-shadow
 
-#### 使用说明
+### 使用说明
 
 
 ```
@@ -30,6 +30,6 @@ Text(text = htmlToAnnotatedString(html))
 ```
 
 
-#### 参与贡献
+### 参与贡献
 
 
