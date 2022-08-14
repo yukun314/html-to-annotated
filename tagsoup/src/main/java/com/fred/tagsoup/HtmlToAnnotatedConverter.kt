@@ -79,8 +79,8 @@ val h6:SpanStyle  by lazy {
 
 private class HtmlToAnnotatedConverter: ContentHandler {
 
-    private val OL = "ol"
-    private val UL = "ul"
+    private val ol = "ol"
+    private val ul = "ul"
     private val builder:AnnotatedString.Builder by lazy {
         AnnotatedString.Builder()
     }
@@ -157,7 +157,7 @@ private class HtmlToAnnotatedConverter: ContentHandler {
             for (i in 0 until length) {
                 val c = ch[i + start]
                 if (c == '\n') {
-
+                    //忽略换行
                 } else if (c == ' ') {
                     val len = sb.length
                     val pred = if (len == 0) {
@@ -198,9 +198,9 @@ private class HtmlToAnnotatedConverter: ContentHandler {
         } else if (tag.equals("p", ignoreCase = true)) {
             startBlockElement(atts,1)
         } else if (tag.equals("ol",true)) {
-            startListElement(OL,atts)
+            startListElement(ol,atts)
         } else if (tag.equals("ul", ignoreCase = true)) {
-            startListElement(UL,atts)
+            startListElement(ul,atts)
         } else if (tag.equals("li", ignoreCase = true)) {
             startLi(atts)
         } else if (tag.equals("div", ignoreCase = true)) {
@@ -235,6 +235,7 @@ private class HtmlToAnnotatedConverter: ContentHandler {
 //                this.fontSize.times(1.2f)
 //            }
         } else if (tag.equals("small", ignoreCase = true)) {
+            //
         } else if (tag.equals("font", ignoreCase = true)) {
 //            startFont(mSpannableStringBuilder, attributes)
         } else if (tag.equals("blockquote", ignoreCase = true)) {
@@ -298,7 +299,7 @@ private class HtmlToAnnotatedConverter: ContentHandler {
         } else if (tag.equals("div", ignoreCase = true)) {
             endBlockElement()
         } else if (tag.equals("span", ignoreCase = true)) {
-           endBlockElement()
+            endBlockElement()
         } else if (tag.equals("strong", ignoreCase = true)) {
             endBlockElement()
         } else if (tag.equals("b", ignoreCase = true)) {
@@ -312,12 +313,15 @@ private class HtmlToAnnotatedConverter: ContentHandler {
         } else if (tag.equals("i", ignoreCase = true)) {
             endBlockElement()
         } else if (tag.equals("big", ignoreCase = true)) {
+            //
         } else if (tag.equals("small", ignoreCase = true)) {
+            //
         } else if (tag.equals("font", ignoreCase = true)) {
 //            android.text.HtmlToSpannedConverter.endFont(mSpannableStringBuilder)
         } else if (tag.equals("blockquote", ignoreCase = true)) {
 //            android.text.HtmlToSpannedConverter.endBlockquote(mSpannableStringBuilder)
         } else if (tag.equals("tt", ignoreCase = true)) {
+            //
         } else if (tag.equals("a", ignoreCase = true)) {
             endBlockElement()
         } else if (tag.equals("u", ignoreCase = true)) {
@@ -364,7 +368,7 @@ private class HtmlToAnnotatedConverter: ContentHandler {
      */
     private fun startListElement(name:String,attributes: Attributes){
         //1 A a I i
-        var type = if (name.equals(OL,true)) "1" else "circle"
+        var type = if (name.equals(ol,true)) "1" else "circle"
         attributes.getValue("", "type")?.apply {
             type = this
         }
@@ -502,7 +506,6 @@ private class HtmlToAnnotatedConverter: ContentHandler {
                 var sColor = Color.Unspecified
                 this.split(",").forEach { shadow ->
                     shadow.split(" ").forEachIndexed{index,value ->
-                        println("index:$index value:$value")
                         try {
                             if (value.endsWith("px",true)){
                                 val v = value.lowercase()
@@ -594,7 +597,7 @@ private class HtmlToAnnotatedConverter: ContentHandler {
 
     private fun getLiSymbol(htmlList: HtmlList):String {
         when(htmlList.tag) {
-            OL -> {
+            ol -> {
                 //1 A a
                 return if (htmlList.type.equals("lower-alpha",true) ||
                     htmlList.type == "a") {
@@ -612,7 +615,7 @@ private class HtmlToAnnotatedConverter: ContentHandler {
                     "${htmlList.number + htmlList.start + 1}. "
                 }
             }
-            UL -> {
+            ul -> {
                 return if (htmlList.type.equals("square",true)) {
                     "▪ "
                 } else {
@@ -624,7 +627,7 @@ private class HtmlToAnnotatedConverter: ContentHandler {
     }
 
     private fun alphaSymbol(builder: StringBuilder, firstSymbol: Int, maxSymbol: Int,
-        start: Int, number: Int) {
+                            start: Int, number: Int) {
         if (maxSymbol > 256 || firstSymbol > 256) return
         if (number + firstSymbol + start < maxSymbol) {
             builder.insert(0, (firstSymbol + number + start).toChar())
@@ -653,289 +656,149 @@ private class HtmlToAnnotatedConverter: ContentHandler {
         return Color.Unspecified
     }
 
-    private fun getColorByName(cssColor:String):Color{
-        if (cssColor.equals("black",true)){
-            return Color.Black
-        } else if (cssColor.equals("blue",true)){
-            return Color.Blue
-        } else if (cssColor.equals("aqua",true)){
-            return Color.Cyan
-        } else if (cssColor.equals("fuchsia",true)){
-            return Color.Magenta
-        } else if (cssColor.equals("gray",true)){
-            return Color(0xff808080)
-        } else if (cssColor.equals("green",true)){
-            return Color(0xff008000)
-        } else if (cssColor.equals("lime",true)){
-            return Color.Green
-        } else if (cssColor.equals("cyan",true)) {
-            return Color.Cyan
-        } else if (cssColor.equals("maroon",true)){
-            return Color(0xff800000)
-        } else if (cssColor.equals("navy",true)){
-            return Color(0xff000080)
-        } else if (cssColor.equals("olive",true)){
-            return Color(0xff808000)
-        } else if (cssColor.equals("orange",true)){
-            return Color(0xffffa500)
-        } else if (cssColor.equals("purple",true)){
-            return Color(0xff800080)
-        } else if (cssColor.equals("red",true)){
-            return Color.Red
-        } else if (cssColor.equals("white",true)){
-            return Color.White
-        } else if (cssColor.equals("silver",true)){
-            return Color(0xffc0c0c0)
-        } else if (cssColor.equals("yellow",true)){
-            return Color.Yellow
-        } else if (cssColor.equals("AliceBlue",true)){
-            return Color(0xfff0f8ff)
-        } else if (cssColor.equals("AntiqueWhite",true)){
-            return Color(0xfffaebd7)
-        } else if (cssColor.equals("Aquamarine",true)){
-            return Color(0xff7fffd4)
-        } else if (cssColor.equals("Azure",true)){
-            return Color(0xfff0ffff)
-        } else if (cssColor.equals("Beige",true)){
-            return Color(0xfff5f5dc)
-        } else if (cssColor.equals("Bisque",true)){
-            return Color(0xffffe4c4)
-        } else if (cssColor.equals("BlanchedAlmond",true)){
-            return Color(0xffffebcd)
-        } else if (cssColor.equals("BlueViolet",true)){
-            return Color(0xff8a2be2)
-        } else if (cssColor.equals("Brown",true)){
-            return Color(0xffa52a2a)
-        } else if (cssColor.equals("BurlyWood",true)){
-            return Color(0xffdeb887)
-        } else if (cssColor.equals("CadetBlue",true)){
-            return Color(0xff5f9ea0)
-        } else if (cssColor.equals("Chartreuse",true)){
-            return Color(0xff7fff00)
-        } else if (cssColor.equals("Chocolate",true)){
-            return Color(0xffd2691e)
-        } else if (cssColor.equals("Coral",true)){
-            return Color(0xffff7f50)
-        } else if (cssColor.equals("CornflowerBlue",true)){
-            return Color(0xff6495ed)
-        } else if (cssColor.equals("Cornsilk",true)){
-            return Color(0xfffff8dc)
-        } else if (cssColor.equals("Crimson",true)){
-            return Color(0xffdc143c)
-        } else if (cssColor.equals("DarkBlue",true)){
-            return Color(0xff00008b)
-        } else if (cssColor.equals("DarkCyan",true)){
-            return Color(0xff008b8b)
-        } else if (cssColor.equals("DarkGoldenRod",true)){
-            return Color(0xffb8860b)
-        } else if (cssColor.equals("DarkGray",true)){
-            return Color(0xffa9a9a9)
-        } else if (cssColor.equals("DarkGreen",true)){
-            return Color(0xff006400)
-        } else if (cssColor.equals("DarkKhaki",true)){
-            return Color(0xffbdb76b)
-        } else if (cssColor.equals("DarkMagenta",true)){
-            return Color(0xff8b008b)
-        } else if (cssColor.equals("DarkOliveGreen",true)){
-            return Color(0xff556b2f)
-        } else if (cssColor.equals("DarkOrange",true)){
-            return Color(0xffff8c00)
-        } else if (cssColor.equals("DarkOrchid",true)){
-            return Color(0xff9932cc)
-        } else if (cssColor.equals("DarkRed",true)){
-            return Color(0xff8b0000)
-        } else if (cssColor.equals("DarkSalmon",true)){
-            return Color(0xffe9967a)
-        } else if (cssColor.equals("DarkSeaGreen",true)){
-            return Color(0xff8fbc8f)
-        } else if (cssColor.equals("DarkSlateBlue",true)){
-            return Color(0xff483d8b)
-        } else if (cssColor.equals("DarkSlateGray",true)){
-            return Color(0xff2f4f4f)
-        } else if (cssColor.equals("DarkTurquoise",true)){
-            return Color(0xff00ced1)
-        } else if (cssColor.equals("DarkViolet",true)){
-            return Color(0xff9400d3)
-        } else if (cssColor.equals("DeepPink",true)){
-            return Color(0xffff1493)
-        } else if (cssColor.equals("DeepSkyBlue",true)){
-            return Color(0xff00bfff)
-        }else if (cssColor.equals("DimGray",true)){
-            return Color(0xff696969)
-        }else if (cssColor.equals("DodgerBlue",true)){
-            return Color(0xff1e90ff)
-        }else if (cssColor.equals("FireBrick",true)){
-            return Color(0xffb22222)
-        }else if (cssColor.equals("FloralWhite",true)){
-            return Color(0xfffffaf0)
-        } else if (cssColor.equals("ForestGreen",true)){
-            return Color(0xff228b22)
-        }else if (cssColor.equals("Gainsboro",true)){
-            return Color(0xffdcdcdc)
-        }else if (cssColor.equals("GhostWhite",true)){
-            return Color(0xfff8f8ff)
-        }else if (cssColor.equals("Gold",true)){
-            return Color(0xffffd700)
-        }else if (cssColor.equals("GoldenRod",true)){
-            return Color(0xffdaa520)
-        }else if (cssColor.equals("GreenYellow",true)){
-            return Color(0xffadff2f)
-        }else if (cssColor.equals("HoneyDew",true)){
-            return Color(0xfff0fff0)
-        }else if (cssColor.equals("HotPink",true)){
-            return Color(0xffff69b4)
-        }else if (cssColor.equals("IndianRed",true)){
-            return Color(0xffcd5c5c)
-        }else if (cssColor.equals("Indigo",true)){
-            return Color(0xff4b0082)
-        }else if (cssColor.equals("Ivory",true)){
-            return Color(0xfffffff0)
-        }else if (cssColor.equals("Khaki",true)){
-            return Color(0xfff0e68c)
-        }else if (cssColor.equals("Lavender",true)){
-            return Color(0xffe6e6fa)
-        }else if (cssColor.equals("LavenderBlush",true)){
-            return Color(0xfffff0f5)
-        }else if (cssColor.equals("LawnGreen",true)){
-            return Color(0xff7cfc00)
-        }else if (cssColor.equals("LemonChiffon",true)){
-            return Color(0xfffffacd)
-        }else if (cssColor.equals("LightBlue",true)){
-            return Color(0xffadd8e6)
-        }else if (cssColor.equals("LightCoral",true)){
-            return Color(0xfff08080)
-        }else if (cssColor.equals("LightCyan",true)){
-            return Color(0xffe0ffff)
-        }else if (cssColor.equals("LightGoldenRodYellow",true)){
-            return Color(0xfffafad2)
-        }else if (cssColor.equals("LightGray",true)){
-            return Color(0xffd3d3d3)
-        }else if (cssColor.equals("LightGreen",true)){
-            return Color(0xff90ee90)
-        }else if (cssColor.equals("LightPink",true)){
-            return Color(0xffffb6c1)
-        }else if (cssColor.equals("LightSalmon",true)){
-            return Color(0xffffa07a)
-        }else if (cssColor.equals("LightSeaGreen",true)){
-            return Color(0xff20b2aa)
-        }else if (cssColor.equals("LightSkyBlue",true)){
-            return Color(0xff87cefa)
-        }else if (cssColor.equals("LightSlateGray",true)){
-            return Color(0xff778899)
-        }else if (cssColor.equals("LightSteelBlue",true)){
-            return Color(0xffB0C4DE)
-        }else if (cssColor.equals("LightYellow",true)){
-            return Color(0xffFFFFE0)
-        }else if (cssColor.equals("LimeGreen",true)){
-            return Color(0xff32CD32)
-        }else if (cssColor.equals("Linen",true)){
-            return Color(0xffFAF0E6)
-        }else if (cssColor.equals("Magenta",true)){
-            return Color(0xffFF00FF)
-        }else if (cssColor.equals("MediumAquaMarine",true)){
-            return Color(0xff66CDAA)
-        }else if (cssColor.equals("MediumBlue",true)){
-            return Color(0xff0000CD)
-        }else if (cssColor.equals("MediumOrchid",true)){
-            return Color(0xffBA55D3)
-        }else if (cssColor.equals("MediumPurple",true)){
-            return Color(0xff9370DB)
-        }else if (cssColor.equals("MediumSeaGreen",true)){
-            return Color(0xff3CB371)
-        }else if (cssColor.equals("MediumSlateBlue",true)){
-            return Color(0xff7B68EE)
-        }else if (cssColor.equals("MediumSpringGreen",true)){
-            return Color(0xff00FA9A)
-        }else if (cssColor.equals("MediumTurquoise",true)){
-            return Color(0xff48D1CC)
-        }else if (cssColor.equals("MediumVioletRed",true)){
-            return Color(0xffC71585)
-        }else if (cssColor.equals("MidnightBlue",true)){
-            return Color(0xff191970)
-        }else if (cssColor.equals("MintCream",true)){
-            return Color(0xffF5FFFA)
-        }else if (cssColor.equals("MistyRose",true)){
-            return Color(0xffFFE4E1)
-        }else if (cssColor.equals("Moccasin",true)){
-            return Color(0xffFFE4B5)
-        }else if (cssColor.equals("NavajoWhite",true)){
-            return Color(0xffFFDEAD)
-        }else if (cssColor.equals("OldLace",true)){
-            return Color(0xffFDF5E6)
-        }else if (cssColor.equals("OliveDrab",true)){
-            return Color(0xff6B8E23)
-        }else if (cssColor.equals("OrangeRed",true)){
-            return Color(0xffFF4500)
-        }else if (cssColor.equals("Orchid",true)){
-            return Color(0xffDA70D6)
-        }else if (cssColor.equals("PaleGoldenRod",true)){
-            return Color(0xffEEE8AA)
-        }else if (cssColor.equals("PaleGreen",true)){
-            return Color(0xff98FB98)
-        }else if (cssColor.equals("PaleTurquoise",true)){
-            return Color(0xffAFEEEE)
-        }else if (cssColor.equals("PaleVioletRed",true)){
-            return Color(0xffDB7093)
-        }else if (cssColor.equals("PapayaWhip",true)){
-            return Color(0xffFFEFD5)
-        }else if (cssColor.equals("PeachPuff",true)){
-            return Color(0xffFFDAB9)
-        }else if (cssColor.equals("Peru",true)){
-            return Color(0xffCD853F)
-        }else if (cssColor.equals("Pink",true)){
-            return Color(0xffFFC0CB)
-        }else if (cssColor.equals("Plum",true)){
-            return Color(0xffDDA0DD)
-        }else if (cssColor.equals("PowderBlue",true)){
-            return Color(0xffB0E0E6)
-        }else if (cssColor.equals("RosyBrown",true)){
-            return Color(0xffBC8F8F)
-        }else if (cssColor.equals("RoyalBlue",true)){
-            return Color(0xff4169E1)
-        }else if (cssColor.equals("SaddleBrown",true)){
-            return Color(0xff8B4513)
-        }else if (cssColor.equals("Salmon",true)){
-            return Color(0xffFA8072)
-        }else if (cssColor.equals("SandyBrown",true)){
-            return Color(0xffF4A460)
-        }else if (cssColor.equals("SeaGreen",true)){
-            return Color(0xff2E8B57)
-        }else if (cssColor.equals("SeaShell",true)){
-            return Color(0xffFFF5EE)
-        }else if (cssColor.equals("Sienna",true)){
-            return Color(0xffA0522D)
-        }else if (cssColor.equals("SkyBlue",true)){
-            return Color(0xff87CEEB)
-        }else if (cssColor.equals("SlateBlue",true)){
-            return Color(0xff6A5ACD)
-        }else if (cssColor.equals("SlateGray",true)){
-            return Color(0xff708090)
-        }else if (cssColor.equals("Snow",true)){
-            return Color(0xffFFFAFA)
-        }else if (cssColor.equals("SpringGreen",true)){
-            return Color(0xff00FF7F)
-        }else if (cssColor.equals("SteelBlue",true)){
-            return Color(0xff4682B4)
-        }else if (cssColor.equals("Tan",true)){
-            return Color(0xffD2B48C)
-        }else if (cssColor.equals("Teal",true)){
-            return Color(0xff008080)
-        }else if (cssColor.equals("Thistle",true)){
-            return Color(0xffD8BFD8)
-        }else if (cssColor.equals("Tomato",true)){
-            return Color(0xffFF6347)
-        }else if (cssColor.equals("Turquoise",true)){
-            return Color(0xff40E0D0)
-        }else if (cssColor.equals("Violet",true)){
-            return Color(0xffEE82EE)
-        }else if (cssColor.equals("Wheat",true)){
-            return Color(0xffF5DEB3)
-        }else if (cssColor.equals("WhiteSmoke",true)){
-            return Color(0xffF5F5F5)
-        }else if (cssColor.equals("YellowGreen",true)){
-            return Color(0xff9ACD32)
-        }else {
-            return Color.Unspecified
+    private fun getColorByName(cssColor: String): Color {
+        when (cssColor.lowercase()) {
+            "black" -> return Color.Black
+            "blue" -> return Color.Blue
+            "aqua" -> return Color.Cyan
+            "fuchsia" -> return Color.Magenta
+            "gray" -> return Color(0xff808080)
+            "green" -> return Color(0xff008000)
+            "lime" -> return Color.Green
+            "cyan" -> return Color.Cyan
+            "maroon" -> return Color(0xff800000)
+            "navy" -> return Color(0xff000080)
+            "olive" -> return Color(0xff808000)
+            "orange" -> return Color(0xffffa500)
+            "purple" -> return Color(0xff800080)
+            "red" -> return Color.Red
+            "white" -> return Color.White
+            "silver" -> return Color(0xffc0c0c0)
+            "yellow" -> return Color.Yellow
+            "AliceBlue".lowercase() -> return Color(0xfff0f8ff)
+            "AntiqueWhite".lowercase() -> return Color(0xfffaebd7)
+            "aquamarine" -> return Color(0xff7fffd4)
+            "azure" -> return Color(0xfff0ffff)
+            "beige" -> return Color(0xfff5f5dc)
+            "bisque" -> return Color(0xffffe4c4)
+            "BlanchedAlmond".lowercase() -> return Color(0xffffebcd)
+            "BlueViolet".lowercase() -> return Color(0xff8a2be2)
+            "brown" -> return Color(0xffa52a2a)
+            "BurlyWood".lowercase() -> return Color(0xffdeb887)
+            "CadetBlue".lowercase() -> return Color(0xff5f9ea0)
+            "chartreuse" -> return Color(0xff7fff00)
+            "chocolate" -> return Color(0xffd2691e)
+            "coral" -> return Color(0xffff7f50)
+            "CornflowerBlue".lowercase() -> return Color(0xff6495ed)
+            "CornSilk" -> return Color(0xfffff8dc)
+            "crimson" -> return Color(0xffdc143c)
+            "DarkBlue".lowercase() -> return Color(0xff00008b)
+            "DarkCyan".lowercase() -> return Color(0xff008b8b)
+            "DarkGoldenRod".lowercase() -> return Color(0xffb8860b)
+            "DarkGray".lowercase() -> return Color(0xffa9a9a9)
+            "DarkGreen".lowercase() -> return Color(0xff006400)
+            "DarkKhaki".lowercase() -> return Color(0xffbdb76b)
+            "DarkMagenta.lowercase()" -> return Color(0xff8b008b)
+            "DarkOliveGreen".lowercase() -> return Color(0xff556b2f)
+            "DarkOrange".lowercase() -> return Color(0xffff8c00)
+            "DarkOrchid".lowercase() -> return Color(0xff9932cc)
+            "DarkRed".lowercase() -> return Color(0xff8b0000)
+            "DarkSalmon".lowercase() -> return Color(0xffe9967a)
+            "DarkSeaGreen".lowercase() -> return Color(0xff8fbc8f)
+            "DarkSlateBlue".lowercase() -> return Color(0xff483d8b)
+            "DarkSlateGray".lowercase() -> return Color(0xff2f4f4f)
+            "DarkTurquoise".lowercase() -> return Color(0xff00ced1)
+            "DarkViolet".lowercase() -> return Color(0xff9400d3)
+            "DeepPink".lowercase() -> return Color(0xffff1493)
+            "DeepSkyBlue".lowercase() -> return Color(0xff00bfff)
+            "DimGray".lowercase() -> return Color(0xff696969)
+            "DodgerBlue".lowercase() -> return Color(0xff1e90ff)
+            "FireBrick".lowercase() -> return Color(0xffb22222)
+            "FloralWhite".lowercase() -> return Color(0xfffffaf0)
+            "ForestGreen".lowercase() -> return Color(0xff228b22)
+            "gainsboro" -> return Color(0xffdcdcdc)
+            "GhostWhite".lowercase() -> return Color(0xfff8f8ff)
+            "gold" -> return Color(0xffffd700)
+            "GoldenRod".lowercase() -> return Color(0xffdaa520)
+            "GreenYellow".lowercase() -> return Color(0xffadff2f)
+            "HoneyDew".lowercase() -> return Color(0xfff0fff0)
+            "HotPink".lowercase() -> return Color(0xffff69b4)
+            "IndianRed".lowercase() -> return Color(0xffcd5c5c)
+            "indigo" -> return Color(0xff4b0082)
+            "ivory" -> return Color(0xfffffff0)
+            "khaki" -> return Color(0xfff0e68c)
+            "lavender" -> return Color(0xffe6e6fa)
+            "LavenderBlush".lowercase() -> return Color(0xfffff0f5)
+            "LawnGreen".lowercase() -> return Color(0xff7cfc00)
+            "LemonChiffon".lowercase() -> return Color(0xfffffacd)
+            "LightBlue".lowercase() -> return Color(0xffadd8e6)
+            "LightCoral".lowercase() -> return Color(0xfff08080)
+            "LightCyan".lowercase() -> return Color(0xffe0ffff)
+            "LightGoldenRodYellow".lowercase() -> return Color(0xfffafad2)
+            "LightGray".lowercase() -> return Color(0xffd3d3d3)
+            "LightGreen".lowercase() -> return Color(0xff90ee90)
+            "LightPink".lowercase() -> return Color(0xffffb6c1)
+            "LightSalmon".lowercase() -> return Color(0xffffa07a)
+            "LightSeaGreen".lowercase() -> return Color(0xff20b2aa)
+            "LightSkyBlue".lowercase() -> return Color(0xff87cefa)
+            "LightSlateGray".lowercase() -> return Color(0xff778899)
+            "LightSteelBlue".lowercase() -> return Color(0xffB0C4DE)
+            "LightYellow".lowercase() -> return Color(0xffFFFFE0)
+            "LimeGreen".lowercase() -> return Color(0xff32CD32)
+            "linen" -> return Color(0xffFAF0E6)
+            "magenta" -> return Color(0xffFF00FF)
+            "MediumAquaMarine".lowercase() -> return Color(0xff66CDAA)
+            "MediumBlue".lowercase() -> return Color(0xff0000CD)
+            "MediumOrchid".lowercase() -> return Color(0xffBA55D3)
+            "MediumPurple".lowercase() -> return Color(0xff9370DB)
+            "MediumSeaGreen".lowercase() -> return Color(0xff3CB371)
+            "MediumSlateBlue".lowercase() -> return Color(0xff7B68EE)
+            "MediumSpringGreen".lowercase() -> return Color(0xff00FA9A)
+            "MediumTurquoise".lowercase() -> return Color(0xff48D1CC)
+            "MediumVioletRed".lowercase() -> return Color(0xffC71585)
+            "MidnightBlue".lowercase() -> return Color(0xff191970)
+            "MintCream".lowercase() -> return Color(0xffF5FFFA)
+            "MistyRose".lowercase() -> return Color(0xffFFE4E1)
+            "moccasin" -> return Color(0xffFFE4B5)
+            "NavajoWhite".lowercase() -> return Color(0xffFFDEAD)
+            "OldLace".lowercase() -> return Color(0xffFDF5E6)
+            "OliveDrab".lowercase() -> return Color(0xff6B8E23)
+            "OrangeRed".lowercase() -> return Color(0xffFF4500)
+            "orchid" -> return Color(0xffDA70D6)
+            "PaleGoldenRod".lowercase() -> return Color(0xffEEE8AA)
+            "PaleGreen".lowercase() -> return Color(0xff98FB98)
+            "PaleTurquoise".lowercase() -> return Color(0xffAFEEEE)
+            "PaleVioletRed".lowercase() -> return Color(0xffDB7093)
+            "PapayaWhip".lowercase() -> return Color(0xffFFEFD5)
+            "PeachPuff".lowercase() -> return Color(0xffFFDAB9)
+            "peru" -> return Color(0xffCD853F)
+            "pink" -> return Color(0xffFFC0CB)
+            "plum" -> return Color(0xffDDA0DD)
+            "PowderBlue".lowercase() -> return Color(0xffB0E0E6)
+            "RosyBrown".lowercase() -> return Color(0xffBC8F8F)
+            "RoyalBlue".lowercase() -> return Color(0xff4169E1)
+            "SaddleBrown".lowercase() -> return Color(0xff8B4513)
+            "salmon" -> return Color(0xffFA8072)
+            "SandyBrown".lowercase() -> return Color(0xffF4A460)
+            "SeaGreen".lowercase() -> return Color(0xff2E8B57)
+            "SeaShell".lowercase() -> return Color(0xffFFF5EE)
+            "sienna" -> return Color(0xffA0522D)
+            "SkyBlue".lowercase() -> return Color(0xff87CEEB)
+            "SlateBlue".lowercase() -> return Color(0xff6A5ACD)
+            "SlateGray".lowercase() -> return Color(0xff708090)
+            "snow" -> return Color(0xffFFFAFA)
+            "SpringGreen".lowercase() -> return Color(0xff00FF7F)
+            "SteelBlue".lowercase() -> return Color(0xff4682B4)
+            "tan" -> return Color(0xffD2B48C)
+            "teal" -> return Color(0xff008080)
+            "thistle" -> return Color(0xffD8BFD8)
+            "tomato" -> return Color(0xffFF6347)
+            "turquoise" -> return Color(0xff40E0D0)
+            "violet" -> return Color(0xffEE82EE)
+            "wheat" -> return Color(0xffF5DEB3)
+            "WhiteSmoke".lowercase() -> return Color(0xffF5F5F5)
+            "YellowGreen".lowercase() -> return Color(0xff9ACD32)
+            else -> return Color.Unspecified
         }
     }
 
@@ -1046,19 +909,3 @@ data class ElementInfo(
     val styleIndex:ArrayList<Int>?,
     val hasParagraphStyle:Boolean = false
 )
-
-
-fun main(){
-    val str = "text-shadow:5px 5px 5px #FF0000,-5px -5px 5px #00ff00;color:red"
-    val pattern =  Pattern.compile("(?:\\s+|\\A)text-shadow\\s*:\\s*((\\S*\\s*){3,})\\b")
-    val s = pattern.matcher(str)
-    if (s.find()) {
-        println("size:${s.groupCount()}")
-        s.group(0)?.apply {
-            println("shadow:${this}")
-        }
-        s.group(1)?.apply {
-            println("shadow:${this}")
-        }
-    }
-}
